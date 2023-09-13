@@ -37,14 +37,14 @@ Install first your virtual environment and the libraries needed.
     title: str
     content: str
 
-### 2 - Best Practices
+## 2 - Best Practices
 
- - Use Pydantic for Data Validation: Define Pydantic models to validate request and response data, ensuring the expected schema.
+ - Use Pydantic for Data Validation: Pydantic models validate requests and response data, ensuring the expected schema. This will allow you to check the data passed to your API.
 
- - Consistent Status Codes: Use appropriate HTTP status codes (e.g., 201 for created resources, 404 for not found) to provide meaningful responses.
+ - Consistent Status Codes: It is really useful to use appropriate HTTP status codes (e.g., 201 for created resources, 404 for not found) in order to provide meaningful responses. This will allow the user a complete understanding when using the API. 
 
- - Automated Documentation: Take advantage of FastAPI's automatic documentation generation at /docs.
+ - Automated Documentation: FastAPI creates automatic documentation generation at "server"/docs meanwhile in POSTMAN all the documentation needs to be created manually. 
 
- - Folder Structure: Organize your project with a modular structure, including an app package with __init__.py and main.py.
+ - Folder Structure: It is a must to organize your project with a modular structure, including an app package with __init__.py and main.py in order to 
 
  - Error Handling: Raise HTTPException for handling errors with detailed error messages and status codes.
