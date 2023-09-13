@@ -1,0 +1,91 @@
+1- Set your enviroment with FastAPI
+#The order of decorators matters
+#To start the server
+#uvicorn main:app
+#To reload the server every time we want to make a changes. This is good for developer enviroenments. 
+#uvicorn main:app --reload 
+
+
+
+2 - POSTMAN
+
+GET and POST Requests
+
+Flow. 
+Get - API - DATA
+
+POST (DATA) - API - DATA
+
+We can send data to the API with a POST in order to transform that data. 
+
+We need a schema.
+The client can send whaecet data yhey want, the data is not getting validated in a potst 
+Force the user into schema thst we expect. 
+
+Explictily dfine waht the data should like if not send an error
+
+pydantic - We can define a schema andautomatically validate the content 
+sending an json  error. 
+
+
+CRUD
+CREATE /POSTS/
+@@app.post
+READ /POSTS/{id} or /POSTS/
+@@app.get
+UPDATE/POSTS/{id}
+@app.put
+DELETE /POSTS/{id}
+@@app.delete
+
+Best Practice:
+Every time that we need to send something we need to raise 201 satus HTTP
+HTTP_201_CREATED
+Same with errors
+
+E.g:
+@app.get("/posts/{id}")
+def get_post(id: int, response: Response):
+    post = find_post(id)
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"NOT found {id}")
+        
+        #response.status_code = status.HTTP_404_NOT_FOUND
+        #return {'message': f"post wit"} 
+    return {"data": post}
+
+
+
+
+With delete posts we need to check the id in case.
+Automatically generates documentation for yout API instead of postman that you need to do manually. 
+
+http://127.0.0.1:8000/docs#/
+
+
+folder structure
+-app
+--  __init__.py  are required to make Python treat directories containing the file as packages. 
+This prevents directories with a common name, such as string, unintentionally hiding valid modules that occur later on the module search path. 
+-- main.py 
+
+
+
+
+3 - DATABASES
+
+DBMS
+
+We don't wor or interact wieh databases directly 
+Instead we make uso of a software referred to as a Database Management System DBMS
+
+Relational:
+    -MYSSQL
+    -POSTGRESQL
+    -ORACLE
+    -SQL server
+NOSQL: 
+    MONGODB
+    DynamoDB
+    ORACLE
+    SQL SERVER
