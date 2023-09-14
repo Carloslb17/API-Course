@@ -1,6 +1,6 @@
 # Establish a connection between Database and FastAPI. 
 
-This section contains a guide to how the main Python code interacts with the database created in PostgreSQL. 
+This section contains a guide to how the main Python code interacts with the database created in PostgreSQL in combination with FastAPI and POSTMAN. 
 
 ## 1 - Setting Up.
 
