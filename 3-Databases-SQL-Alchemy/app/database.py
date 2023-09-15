@@ -12,3 +12,12 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 Base = declarative_base()
+
+
+# Dependency 
+def get_db():
+    db = SessionLocal() #Responsable of talking between the databases
+    try:
+        yield db
+    finally:
+        db.close()
