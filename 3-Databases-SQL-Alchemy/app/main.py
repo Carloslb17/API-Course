@@ -1,18 +1,38 @@
 from typing import Optional
-from fastapi import FastAPI, Response, status, HTTPException
+from fastapi import FastAPI, Response, status, HTTPException, Depends
 from fastapi.params import Body
 from pydantic import BaseModel
 import time
-
+import models
+from .database import engine, SessionLocal
+from sqlalchemy.orm import Session
 #Database connection
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
+
+import sys
+print(sys.path)
+
 #https://www.youtube.com/watch?v=0sOvCWFmrtA
 
 
-
+models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
+
+# Dependency 
+def get_db():
+    db = SessionLocal() #Responsable of talking between the databases
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+
+
+
+
 
 
 class Post(BaseModel): # SCHEMA
@@ -79,6 +99,10 @@ def find_indexpost(id):
 def root(): # Function
     return {"message": "Hello World"}
 
+
+@app.get("sqlalchemy")
+def test_posts(db: Session = Depends(get_db)):
+    return {"success"}
 
 @app.get("/posts", status_code=status.HTTP_200_OK)
 def get_posts():

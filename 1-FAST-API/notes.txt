@@ -89,3 +89,12 @@ NOSQL:
     DynamoDB
     ORACLE
     SQL SERVER
+
+
+
+
+    ORM - Databse operations with python code and nor SQL. 
+    Is like an interpreter. 
+
+    SQLALCHEMY can be used in any web framework 
+    
