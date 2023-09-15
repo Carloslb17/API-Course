@@ -32,7 +32,6 @@ In this repository, you'll find a Python script (main.py) that demonstrates the 
 
 
     ```python
-    
     from sqlalchemy import Column, Integer, String
     from sqlalchemy.ext.declarative import declarative_base
     
@@ -51,7 +50,7 @@ In this repository, you'll find a Python script (main.py) that demonstrates the 
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker
 
-# Create an SQLite database in memory (you can change this to a file-based database)
+-  Create an SQLite database in memory (you can change this to a file-based database)
 
     ```python
     engine = create_engine('sqlite:///:memory:')
@@ -69,4 +68,40 @@ In this repository, you'll find a Python script (main.py) that demonstrates the 
     users = session.query(User).all()
     for user in users:
         print(f"User ID: {user.id}, Username: {user.username}, Email: {user.email}")
+
+
+
+
+## Retrieving data from a post. 
+
+- The following code is an example of how you can retrieve data from a database using an ORM initiated above, without using any type of SQL. The reason is that the ORM transforms the Python language into SQL with some methods. 
+
+    ```python    
+    @app.get("sqlalchemy")
+    def test_posts(db: Session = Depends(get_db)):
+        post = db.query(models.Post).all()
+        return {"success": post}
+
+## Differences between a Schema pydantic model and the schema of the database SQLAlchemy.
+- The schema from <b> Pydantic </b>  defines the structure of a request or a response. This will ensure a pre-defined shape for the user who wants to use our API and also provide validation. The following code is an example od using pydantic and inheritance
+  
+    ```python
+    # A good practice will be based on creating a class base as a parent.
+    class PostBase(BaseModel):
+        title: str
+        content: str
+        published: bool = True
+
+    class CreatingPost(PostBase)
+        pass
+
+    class Post(PostBase)
+        id: int
+        created_at: time
+
+        class Config:
+            orm_mode = True
+  
+- The schema from <b> SQLAlchemy </b> is responsible for defining the variables or columns of our database. Is used to query, create, delete, and update entries. 
+    
 
