@@ -6,8 +6,6 @@ Welcome to the Object-Relational Mapping (ORM) example using SQLAlchemy! This re
 - [Introduction to ORM](#introduction-to-orm)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Introduction to ORM
 
@@ -21,7 +19,54 @@ ORM stands for Object-Relational Mapping, a technique that allows developers to 
 
 ## Installation
 
-To get started with this example, you'll need to have Python and SQLAlchemy installed. If you haven't already, you can install them using pip:
+- To get started with this example, you'll need to have Python and SQLAlchemy installed. If you haven't already, you can install them using pip:
 
-```bash
-pip install sqlalchemy
+    ```bash
+    pip install sqlalchemy
+
+
+## Usage
+In this repository, you'll find a Python script (main.py) that demonstrates the usage of SQLAlchemy for ORM. We'll use SQLite as our database for this example.
+
+ - Define Models: In the models.py file, define your database tables as Python classes. For example:
+
+
+    ```python
+    
+    from sqlalchemy import Column, Integer, String
+    from sqlalchemy.ext.declarative import declarative_base
+    
+    Base = declarative_base()
+    
+    class User(Base):
+        __tablename__ = 'users'
+        
+        id = Column(Integer, primary_key=True)
+        username = Column(String)
+        email = Column(String)
+        
+- Create a Session: In main.py, create a SQLAlchemy session to interact with the database:
+
+    ```python
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
+
+# Create an SQLite database in memory (you can change this to a file-based database)
+
+    ```python
+    engine = create_engine('sqlite:///:memory:')
+    Session = sessionmaker(bind=engine)
+    session = Session()
+ - Perform Database Operations: Use the session to perform CRUD operations on your models. Example:
+
+    ```python
+    #Create a new user
+    new_user = User(username='john_doe', email='john@example.com')
+    session.add(new_user)
+    session.commit()
+
+    # Query all users
+    users = session.query(User).all()
+    for user in users:
+        print(f"User ID: {user.id}, Username: {user.username}, Email: {user.email}")
+
