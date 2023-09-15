@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from fastapi import FastAPI, Response, status, HTTPException, Depends
 from fastapi.params import Body
 from pydantic import BaseModel
@@ -90,8 +90,8 @@ def root(): # Function
 @app.get("sqlalchemy")
 def test_posts(db: Session = Depends(get_db)):
 
-
-    return {"success"}
+    post = db.query(models.Post).all()
+    return {"success" : post}
 
 @app.get("/posts", status_code=status.HTTP_200_OK)
 def get_posts():
@@ -103,21 +103,26 @@ def get_posts():
 
 ### SQL Injection - manipulate data within a database. 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
-def create_posts(post: Post):
-    cursor.execute(""" INSERT INTO posts (title, content, published) VALUES (%s, %s, %s)""", 
-                   (post.title, post.content, post.published))
-    new_post = cursor.fetchone()
-    conn.commit()
+def create_posts(post: Post, db: Session = Depends(get_db)):
 
+    #There is a way  much better way to do this, we need to unpack a dictionary. 
+    #new_post = models.Post(title=post.title, conctent=post.content, published=post.published)
+    
+    #The following will unpack the dictionary in order to fill the columns efficently. 
+    new_post = models.Post(**post.model_dump)
+    
+    db.add(new_post)
+    db.commit()
+    db.refresh()
     return {"data": new_post}
 
 
 
 @app.get("/posts/{id}") 
-def get_post(id: int): # We validate as a number cause the uer can type some type of string, then we convert into str to fetch the data from the database. 
-    cursor.execute(""" SELECT * from posts WHERE id = %s""", (str(id))) # Extra comma cause might lead to some issues. 
-    post = cursor.fetchone()
-    conn.commit()
+def get_post(id: int, db: Session = Depends(get_db)): # We validate as a number cause the uer can type some type of string, then we convert into str to fetch the data from the database. 
+   
+
+    post = db.query(models.Post).filter(models.Post.id == id).first()  # Is better to use first method as will look for one result instead of using all
     
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id was not found {id}")
@@ -127,10 +132,10 @@ def get_post(id: int): # We validate as a number cause the uer can type some typ
 
 
 @app.delete("/posts/{id}",  status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(id: int, response: Response):
-    cursor.execute(""" DELETE FROM posts WHERE id = %s returning *""", (str(id),)) # Extra comma cause might lead to some issues. 
-    deleted_post = cursor.fetchone()
-    conn.commit() # Every time we make a change to a database remember to coomit same as git.
+def delete_post(id: int, db: Session = Depends(get_db)):
+    
+
+    deleted_post = db.query(models.Post).filter(models.Post.id == id).first()
     
     if deleted_post == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Does not exist {id}")
@@ -139,15 +144,15 @@ def delete_post(id: int, response: Response):
 
 
 @app.put("/posts/{id}") #,  status_code=status.HTTP_204_NO_CONTENT)
-def update_post(id: int, post: Post):
+def update_post(id: int, post: Post, db: Session = Depends(get_db)):
     
-    cursor.execute(""" UPDATE posts SET title=%s, content=%s, published=%s RETURNING *""", 
-                   (post.title, post.content, post.published)) # Extra comma cause might lead to some issues. 
-    updated_post = cursor.fetchone()
-    conn.commit() # Every time we make a change to a database remember to coomit same as git.
+    updated_post = db.query(models.Post).filter(models.Post.id == id).first()
+    post = updated_post.first()
 
-
-    if updated_post == None:
+    if post == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id was not found{id}")
-    
+
+    post.update(post.model_dump())
+    db.commit()
+
     return {"message": updated_post}
